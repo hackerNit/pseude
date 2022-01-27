@@ -6,7 +6,7 @@ jobs:
         description:Build a docker image
     steps:
       - checkout
-      - gcr/gcr-auth
+     
       - run:
           name: Build an image
           command: |
