@@ -24,7 +24,7 @@ jobs:
     steps:
       # Make a cluster
       #Make a deployment.yaml file and service.yaml file
-      #getting service 
+      #getting services
       - run:
           name:create cluster
           command: |
