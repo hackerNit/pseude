@@ -12,12 +12,12 @@ jobs:
           command: |
           docker build -t asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1
     google-auth:
-    description:google autorisation command
-    steps:
-    -run:
-    name:google authorisation
-    command: |
-    gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
+         description:google autorisation command
+     steps:
+       -run:
+           name: google authorisation
+          command: |
+            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
 
    push-docker-image:
         description:push a docker image
@@ -56,5 +56,8 @@ workflows:
   build-workflow:
     jobs:
       - build-docker-image
+      -google auth
+        required: build-docker-image
       -push-docker-image
+      
       -deploy-service
