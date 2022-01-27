@@ -1,7 +1,7 @@
 
 version: 2.1
 orbs:
-Run google-github-actions/auth@v0.4.0
+ google-github-actions/auth@v0.4.0
 jobs:
   build-docker-image:
         description:Build a docker image
