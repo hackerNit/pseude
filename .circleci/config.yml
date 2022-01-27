@@ -1,12 +1,13 @@
 
 version: 2.1
-
+orbs:
+Run google-github-actions/auth@v0.4.0
 jobs:
   build-docker-image:
         description:Build a docker image
     steps:
       - checkout
-     
+     -gcr/gcr-auth
       - run:
           name: Build an image
           command: |
