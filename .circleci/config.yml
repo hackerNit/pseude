@@ -48,10 +48,7 @@ jobs:
    deploy-service:
     description: Deploy application to Google Kubernetes Engine
     steps:
-     description: Deploy application to Google Kubernetes Engine
-    machine: true
-    steps:
-      # Install `gcloud` and `kubectl` if not already installed.
+    # Install `gcloud` and `kubectl` if not already installed.
       - gcp-gke/install
       # Initialize the `gcloud` CLI.
       - gcp-gke/update-kubeconfig-with-credentials:
