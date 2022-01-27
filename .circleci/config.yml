@@ -4,11 +4,10 @@ orbs:
 google-github-actions/auth@v0.4.0
   with:
     token_format: access_token
-    workload_identity_provider: baas-boilerplate-app-sha256-1: asia.gcr.io/socket-stg-327511/baas-boilerplate-app@sha256:59c82114ab899886009d0efb8125ab64d8e728079bf5c1c6defe8557d9b3818e
+   
     
     create_credentials_file: true
     access_token_lifetime: 3600s
-    access_token_scopes: https://www.googleapis.com/auth/cloud-platform
     id_token_include_email: false
   env:
     PROJECT_ID: socket-stg-327511
@@ -49,9 +48,23 @@ jobs:
    deploy-service:
     description: Deploy application to Google Kubernetes Engine
     steps:
+     description: Deploy application to Google Kubernetes Engine
+    machine: true
+    steps:
+      # Install `gcloud` and `kubectl` if not already installed.
+      - gcp-gke/install
+      # Initialize the `gcloud` CLI.
+      - gcp-gke/update-kubeconfig-with-credentials:
+          cluster: $GOOGLE_CLUSTER_ID
+          perform-login: true
+
+      - add_ssh_keys:
+          fingerprints:
+            - $GOOGLE_SSH_KEY
       # Make a cluster
       #Make a deployment.yaml file and service.yaml file
       #getting services
+      
       - run:
           name:create cluster
           command: |
