@@ -11,13 +11,13 @@ google-github-actions/auth@v0.4.0
     access_token_scopes: https://www.googleapis.com/auth/cloud-platform
     id_token_include_email: false
   env:
-    PROJECT_ID: 
-    GAR_LOCATION: us-central1
-    GKE_CLUSTER: cluster-1
-    GKE_ZONE: us-central1-c
-    DEPLOYMENT_NAME: gke-test
-    REPOSITORY: samples
-    IMAGE: static-site
+    PROJECT_ID: socket-stg-327511
+    GAR_LOCATION: asia-south1
+    GKE_CLUSTER: task-1
+    GKE_ZONE: asia-south1-b
+    DEPLOYMENT_NAME: baas-boilerplate-app
+    REPOSITORY: pseudo
+    IMAGE: baas-boilerplate-app
 jobs:
 
   build-docker-image:
@@ -58,7 +58,7 @@ jobs:
           gcloud container cluster create baas-boilerplate
           --num nodes 1 \
           --enable-basic-auth \
-          --zone us-central1-a
+          --zone asia-south1-a
        -run:
             name:deployment-and-services
             command: |
