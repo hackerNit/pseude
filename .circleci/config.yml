@@ -1,42 +1,23 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.0.1
   gcp-gke: circleci/gcp-gke@0.1.0
   gcr: circleci/gcp-gcr@0.0.2
 jobs:
-  build:
-    description: Install npm
-    # machine option runs your jobs in a dedicated, ephemeral VM that has the following specifications:
-    machine: true
-    steps:
-      - checkout
-      # Install node
-      - node/install
-      # Install npm
-      - node/install-npm
-      # Download and cache dependencies
-      - node/with-cache:
-          steps:
-            - run:
-                name: Install application dependencies
-                command: npm install
-          # Save cache
-          cache-key: package.json
-          # Ignore non-checksum cache hits
-          use-strict-cache: true
+ 
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
     steps:
       - checkout
       - gcr/gcr-auth
-      - gcr/build-image:
-          image: circle-gke
-          tag: "v2" #Change version number e.g to 'v3' when updating application
-      - gcr/push-image:
-          image: circle-gke
-          tag: "v2" #Change version number e.g to 'v3' when updating application
-    
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build -t asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1 .
+      - run:
+          name: Push image to GCR
+          command: |
+            docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
   deploy:
     description: Deploy application to Google Kubernetes Engine
     machine: true
@@ -53,10 +34,8 @@ jobs:
 workflows:
   build_update_deploy:
     jobs:
-      - build
-      - Build-Push-Image-Docker:
-          requires:
-            - build
+      
+      - Build-Push-Image-Docker
       - deploy:
           requires:
             - Build-Push-Image-Docker
