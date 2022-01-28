@@ -1,82 +1,48 @@
-
-version:2.1
+version: 2.1
 orbs:
-google-github-actions/auth@v0.4.0
-  with:
-    token_format: access_token
-   
-    
-    create_credentials_file: true
-    access_token_lifetime: 3600s
-    id_token_include_email: false
-  env:
-    PROJECT_ID: socket-stg-327511
-    GAR_LOCATION: asia-south1
-    GKE_CLUSTER: task-1
-    GKE_ZONE: asia-south1-b
-    DEPLOYMENT_NAME: baas-boilerplate-app
-    REPOSITORY: pseudo
-    IMAGE: baas-boilerplate-app
+  node: circleci/node@1.0.1
+  gcp-gke: circleci/gcp-gke@0.1.0
+  gcr: circleci/gcp-gcr@0.0.2
 jobs:
-
-  build-docker-image:
-        description:Build a docker image
+  build:
+    description: Install npm
+    machine: true
     steps:
       - checkout
-     -gcr/gcr-auth
-      - run:
-          name: Build an image
-          command: |
-          docker build -t asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1
-    google-auth:
-         description:google autorisation command
-     steps:
-       -run:
-           name: google authorisation
-          command: |
-            gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://asia.gcr.io
-
-   push-docker-image:
-        description:push a docker image
+      - node/install
+      - node/install-npm
+     
+  Build-Push-Image-Docker:
+    description: Build and push image a docker image
+    machine: true
     steps:
       - checkout
-      -gcr/gcr-auth
-      - run:
-          name: push an image
-          command: |
-          docker push asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1
-   deploy-service:
-    description: Deploy application to Google Kubernetes Engine
-    steps:
+      - gcr/gcr-auth
+      - gcr/build-image:
+          image: baas-boilerplate-app
+          tag: "v1" 
+      - gcr/push-image:
+          image: baas-boilerplate-app
+          tag: "v1" 
     
-      # Make a cluster
-      #Make a deployment.yaml file and service.yaml file
-      #getting services
-      
-      - run:
-          name:create cluster
-          command: |
-          gcloud container cluster create baas-boilerplate
-          --num nodes 1 \
-          --enable-basic-auth \
-          --zone asia-south1-a
-       -run:
-            name:deployment-and-services
-            command: |
-           kubectl apply -f deployment.yaml
-           kubectl apply -f service.yaml
-        -run:
-            name:get-service
-            command: |
-            kubectl get services
-      
-            
+  deploy:
+    description: Deploy application
+    machine: true
+    steps:
+     
+      - gcp-gke/install
+      - gcp-gke/init
+      - gcp-gke/rollout-image:
+          deployment: baas-boilerplate-app
+          container: baas-boilerplate-app
+          image: asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1
 workflows:
-  build-workflow:
+  build_update_deploy:
     jobs:
-      - build-docker-image
-      -google auth
-        required: build-docker-image
-      -push-docker-image
-      
-      -deploy-service
+      - build
+      - Build-Push-Image-Docker:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - Build-Push-Image-Docker
