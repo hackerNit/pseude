@@ -29,6 +29,8 @@ jobs:
        - gcp-gke/update-kubeconfig-with-credentials:
           cluster: $socket-stg-327511
           perform-login: true
+          -kubectl apply -f deployment.yaml
+          -
 
      
       # Update a deployment Docker image.
