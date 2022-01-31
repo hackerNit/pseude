@@ -5,21 +5,21 @@ orbs:
 jobs:
  
   Build-Push-Image-Docker:
-    description: Build and push image to Google Container Registry
+    description: Build and push image 
     machine: true
     steps:
       - checkout
       - gcr/gcr-auth
       - run:
-          name: Build Docker Image
+          name: Build  Image
           command: |
             docker build -t asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1 .
       - run:
-          name: Push image to GCR
+          name: Push image 
           command: |
             docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
   deploy:
-    description: Deploy application to Google Kubernetes Engine
+    description: Deploy application 
     machine: true
     steps:
       # Install `gcloud` and `kubectl` if not already installed.
