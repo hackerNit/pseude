@@ -18,20 +18,4 @@ jobs:
           name: Push image to GCR
           command: |
             docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
-      - gcp-gke/install
-      - gcp-gke/update-kubeconfig-with-credentials:
-          cluster: $task-1
-          perform-login: true
-        - add_ssh_keys:
-          fingerprints:
-            - $ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUBv2SeRHewccbNR7xUjNfbBfcQdgyCcVy/Ujqo/8jzg8+NnUiGrM8wwcI8bk5Wb9xTxjAOOX3XTihL1fB6ZbwQ4oOnzDoY/k8xw1XegSUjEYtdosaS3ult82WZh7Yd43bAHhT4kmt3pXVR0Jn7mipchnvPwO3XQRdWkNBd4HSoenOqugIUj66oet4mCrS4c0XPtoqk/zeQsYnFTcPoW7o6mYIxbY93gpwk2H+5OM6lUZRFuex3uw0kLaCqpZGKu1CtudUtmeVNq8bWrsV8yXjrvvZdk6/1JK5VIRXDyGJt4Kpshw13Ezd9yZAmL9h6tGSbjYpyVV2RoG8Kjj2ylzj google-ssh {"userName":"nishant@whozzat.com","expireOn":"2022-01-23T07:49:39+0000"}
-      - run:
-          name: Set Image
-          command: |
-            kubectl set image deployment/<app-name> <app-name>=asia.gcr.io/$sockeg-stg-327511/baas-boilerplate-app:v1 -n viasocket
-workflows:
-  Build_Deploy:
-    jobs:
-      - Build-Push-Image-Docker:
-          context:
-            - <context-name>
+      
