@@ -1,37 +1,36 @@
 version: 2.1
 orbs:
-  
-   gcp-gke: circleci/gcp-gke@1.1.0
+  gcp-gke: circleci/gcp-gke@0.1.0
   gcr: circleci/gcp-gcr@0.0.2
 jobs:
-     
+ 
   Build-Push-Image-Docker:
-    description: Build and push image a docker image
+    description: Build and push image to Google Container Registry
     machine: true
     steps:
       - checkout
       - gcr/gcr-auth
-            - run:
+      - run:
           name: Build Docker Image
           command: |
-            docker build -t asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1 
+            docker build -t asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1 .
       - run:
           name: Push image to GCR
           command: |
             docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
-
-    
   deploy:
-    description: Deploy application
+    description: Deploy application to Google Kubernetes Engine
     machine: true
     steps:
-     
+      # Install `gcloud` and `kubectl` if not already installed.
       - gcp-gke/install
+      # Initialize the `gcloud` CLI.
       - gcp-gke/init
+      # Update a deployment Docker image.
       - gcp-gke/rollout-image:
           deployment: baas-boilerplate-app
           container: baas-boilerplate-app
-          image: asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1
+          image: asia.gcr.io/socket-stg-327511/baas-boilerplate-app:v1 # change version when updating
 workflows:
   build_update_deploy:
     jobs:
@@ -41,4 +40,3 @@ workflows:
           requires:
             - Build-Push-Image-Docker
 
-      
