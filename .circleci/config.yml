@@ -14,7 +14,7 @@ jobs:
       - google-github-actions/auth@v0.4.0
   with:
     token_format: access_token
-    workload_identity_provider: constraints/iam.workloadIdentityPoolAwsAccounts
+ 
     service_account: socket-stg-327511@appspot.gserviceaccount.com
     create_credentials_file: true
     access_token_lifetime: 3600s
