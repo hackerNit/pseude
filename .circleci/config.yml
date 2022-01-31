@@ -1,9 +1,9 @@
 version: 2.1
 orbs:
-  gcp-gke: circleci/gcp-gke@0.1.0
+  gcp-gke: circleci/gcp-gke@1.1.0
   gcr: circleci/gcp-gcr@0.0.2
+  slack: circleci/slack@4.1
 jobs:
- 
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
@@ -13,36 +13,22 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build -t asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1 .
+            docker build -t asia.gcr.io/$GOOGLE_PROJECT_ID/web-builder-api:<< pipeline.number >> .
       - run:
           name: Push image to GCR
           command: |
-            docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
-  deploy:
-    description: Deploy application to Google Kubernetes Engine
-    machine: true
-    steps:
-      # Install `gcloud` and `kubectl` if not already installed.
+            docker push asia.gcr.io/$GOOGLE_PROJECT_ID/web-builder-api:<< pipeline.number >>
       - gcp-gke/install
-      # Initialize the `gcloud` CLI.
-      - gcp-gke/init
-       - gcp-gke/update-kubeconfig-with-credentials:
-          cluster: $socket-stg-327511
+      - gcp-gke/update-kubeconfig-with-credentials:
+          cluster: $GOOGLE_CLUSTER_ID
           perform-login: true
-          -kubectl apply -f deployment.yaml
-          -
-
-     
-      # Update a deployment Docker image.
-      - gcp-gke/rollout-image:
-          deployment: circle-ci-cluster
-          container: dominic-backend
-          image: gcr.io/circle-ci-demo/circle-gke:v2 # change version when updating
+      - run:
+          name: Set Image
+          command: |
+            kubectl set image deployment/<app-name> <app-name>=asia.gcr.io/$GOOGLE_PROJECT_ID/<app-name>:<< pipeline.number >> -n viasocket
 workflows:
-  build_update_deploy:
+  Build_Deploy:
     jobs:
-      
-      - Build-Push-Image-Docker
-      - deploy:
-          requires:
-            - Build-Push-Image-Docker
+      - Build-Push-Image-Docker:
+          context:
+            - <context-name>
