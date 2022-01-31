@@ -19,8 +19,26 @@ jobs:
           name: Push image to GCR
           command: |
             docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
+   Deploy-to-GKE:
+    description: Deploy application to Google Kubernetes Engine
+    machine: true
+    steps:
+      # Install `gcloud` and `kubectl` if not already installed.
+      - gcp-gke/install
+      # Initialize the `gcloud` CLI.
+      - gcp-gke/update-kubeconfig-with-credentials:
+          cluster: $GOOGLE_CLUSTER_ID
+          perform-login: true
+
+      - add_ssh_keys:
+          fingerprints:
+            - $GOOGLE_SSH_KEY
+
   workflows:
   Build_Deploy:
     jobs:
-      - Build-Push-Image-Docker:
+      - Build-Push-Image-Docker
+       - Deploy-to-GKE:
+          requires:
+            - Build-Push-Image-Docker
       
