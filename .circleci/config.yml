@@ -19,6 +19,8 @@ jobs:
           name: Push image to GCR
           command: |
             docker push asia.gcr.io/$socket-stg-327511/baas-boilerplate-app:v1
-  workflow:
-    -Build-Push-Image-Docker
+  workflows:
+  Build_Deploy:
+    jobs:
+      - Build-Push-Image-Docker:
       
