@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   gcp-gke: circleci/gcp-gke@1.1.0
   gcr: circleci/gcp-gcr@0.0.2
-  slack: circleci/slack@4.1
+  
 jobs:
   Build-Push-Image-Docker:
     description: Build and push image to Google Container
@@ -37,7 +37,7 @@ jobs:
   workflows:
   Build_Deploy:
     jobs:
-      - Build-Push-Image-Docker
+      - Build-Push-Image-Docker:
        - Deploy-to-GKE:
           requires:
             - Build-Push-Image-Docker
